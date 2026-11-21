@@ -143,33 +143,58 @@ class HashTable:
 
 
 class DisjointSets:
+    # Conjuntos disjuntos con Union-Find. Cada elemento guarda su padre y su rango.
+    # La unión por rango cuelga el árbol más bajo del más alto y la compresión de caminos
+    # aplana el árbol en cada findSet, así que las dos operaciones son O(alfa(n)) amortizado
     def __init__(self, A):
-        self.sets = [set([x]) for x in A]
+        self.padre = {}
+        self.rango = {}
+        for x in A:
+            self.padre[x] = x
+            self.rango[x] = 0
 
     def findSet(self, x):
-        for si in self.sets:
-            if x in si:
-                return si
-        return None
+        # Devuelve la raíz del conjunto de x, comprimiendo el camino a la raíz
+        if x not in self.padre:
+            return None
+        raiz = x
+        while self.padre[raiz] != raiz:
+            raiz = self.padre[raiz]
+        while self.padre[x] != raiz:
+            siguiente = self.padre[x]
+            self.padre[x] = raiz
+            x = siguiente
+        return raiz
 
     def makeSet(self, x):
-        if self.findSet(x) is None:
-            self.sets.append(set([x]))
-            return self.sets[len(self.sets)-1]
+        if x not in self.padre:
+            self.padre[x] = x
+            self.rango[x] = 0
         return self.findSet(x)
 
+    def cuentaConjuntos(self):
+        # Cuenta cuántas raíces distintas quedan: una por cada conjunto o zona conectada
+        raices = set()
+        for x in self.padre:
+            raices.add(self.findSet(x))
+        return len(raices)
+
     def union(self, x, y):
-        s1 = self.findSet(x)
-        s2 = self.findSet(y)
-        if s1 is None:
-            s1 = self.makeSet(x)
-        if s2 is None:
-            s2 = self.makeSet(y)
-        if s1 != s2:
-            s3 = s1.union(s2)
-            self.sets.remove(s1)
-            self.sets.remove(s2)
-            self.sets.append(s3)
+        # Une los conjuntos de x y de y por rango. Devuelve False si ya estaban juntos
+        raizX = self.findSet(x)
+        raizY = self.findSet(y)
+        if raizX is None:
+            raizX = self.makeSet(x)
+        if raizY is None:
+            raizY = self.makeSet(y)
+        if raizX == raizY:
+            return False
+        if self.rango[raizX] < self.rango[raizY]:
+            raizX, raizY = raizY, raizX
+        self.padre[raizY] = raizX
+        if self.rango[raizX] == self.rango[raizY]:
+            self.rango[raizX] = self.rango[raizX] + 1
+        return True
 
 
 class Graph:
@@ -369,7 +394,7 @@ def validarDatos(caso):
         est = tabla.search(idEst)
         if est['nodo'] not in grafo.vertexes:
             errores.append('El estudiante ' + idEst + ' (' + est['nombre'] + ') vive en ' + est['nodo'] + ', que no existe en el mapa')
-        elif est['nodo'] not in conjuntoColegio:
+        elif dj.findSet(est['nodo']) != conjuntoColegio:
             errores.append('El estudiante ' + idEst + ' (' + est['nombre'] + ') vive en ' + est['nodo'] + ', que no tiene camino al colegio')
     if len(caso['capacidades']) == 0:
         errores.append('No hay buses')
