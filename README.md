@@ -65,15 +65,11 @@ y `union` son O(α(n)) amortizado en vez de O(n).
 
 ## Cómo ejecutar
 
-El MVP de escritorio solo usa la biblioteca estándar de Python (Tkinter incluido).
+El MVP de escritorio solo usa la biblioteca estándar de Python (Recomiendo usar un entorno virtual para el caso de usar Linux/Mac OS).
 
 ```bash
-cd 3_Ventana_de_escritorio/efiruta_escritorio
-python3 app.py
+python3 3_Ventana_de_escritorio/efiruta_escritorio/app.py
 ```
-
-> En algunas distribuciones de Linux, Tkinter viene en un paquete aparte
-> (`sudo pacman -S tk`, `sudo apt install python3-tk`).
 
 Los cuadernos están pensados para ejecutarse en Google Colab. Solo necesitan `matplotlib`:
 
@@ -95,5 +91,5 @@ El historial refleja el trabajo real, en orden:
 1. Versión original entregada por el equipo.
 2. Optimización del motor: conjuntos disjuntos con Union-Find y actualización de los cuadernos.
 3. Actualización de roles del equipo, caso de negocio y redacción.
-4. Pitch: Diego en la portada y nueva diapositiva del caso.
+4. Ajustes finales al pitch: correcciones y colores en las diapositivas.
 5. Documentación del repositorio.
