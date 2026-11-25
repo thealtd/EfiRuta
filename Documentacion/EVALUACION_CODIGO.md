@@ -2,8 +2,8 @@
 
 **Alcance revisado:** `3_Ventana_de_escritorio/efiruta_escritorio/` (`logica.py` 848 líneas,
 `app.py` 696 líneas), el cuaderno del Momento 2 (33 celdas, 3 celdas de código con la lógica:
-273 + 65 + 504 líneas), el cuaderno de entrega final, `README.md`, `requirements.txt` e
-historial de git (6 commits).
+266 + 65 + 503 líneas), el cuaderno de entrega final, `README.md`, `requirements.txt` e
+historial de git (7 commits).
 
 **Método:** lectura completa del código, ejecución del motor, ejecución de la suite de
 pruebas del cuaderno y contraste de cada número publicado en el pitch. No es una revisión de
@@ -29,7 +29,7 @@ estilo: cada hallazgo tiene archivo, línea y consecuencia.
 | Documentación y trazabilidad | 10 % | **9.0** | Cuadernos, README y mensajes de decisión en tiempo de ejecución |
 | Interfaz y usabilidad | 10 % | **8.0** | Funcional y clara; una clase de 696 líneas mezcla vista, estado y simulación |
 | Mantenibilidad y arquitectura | 10 % | **5.5** | Lógica duplicada, `import *`, datos del caso incrustados en el módulo de lógica |
-| Rendimiento | 5 % | **8.0** | 9 ms para el caso completo; hay trabajo redundante que no duele a este tamaño |
+| Rendimiento | 5 % | **8.0** | 20 ms para el caso completo; hay trabajo redundante que no duele a este tamaño |
 | **Total ponderado** | **100 %** | **8.0 / 10** | |
 
 **Cómo leer el 8.0.** Como proyecto de DDYA es un 8 sólido, con partes de 9. Como base para
@@ -51,8 +51,10 @@ automáticamente, y cambiar de colegio exige editar el código fuente.
 | Dependencias | `requirements.txt` | 1 línea | Solo `matplotlib` (los cuadernos); la app usa solo la stdlib |
 
 Dato relevante para todo lo que sigue: **la lógica existe dos veces.** Comparé función por
-función las celdas 19–21 del cuaderno contra `logica.py`: son **58 de 58 funciones
-idénticas**, sin una sola diferencia de cuerpo. Hoy no divergen. Mañana sí.
+función las celdas 19–21 del cuaderno contra `logica.py`: son **58 funciones y 5 clases
+idénticas** (63 de 63 nodos con el mismo árbol sintáctico), sin una diferencia de código. Los
+comentarios sí divergen desde la poda de `REVISION_SLOP.md` (los cuadernos perdieron 11
+líneas que `logica.py` conserva): es el riesgo de A1, ya materializado en lo inofensivo.
 
 ---
 
@@ -170,9 +172,10 @@ Severidad: **A** = arreglar antes de que el proyecto crezca · **M** = deuda que
 ### A1 · Dos copias de la misma lógica
 
 **Qué pasa.** `logica.py` es una copia literal de las celdas 19, 20 y 21 del cuaderno. Lo
-verifiqué función por función: 58 funciones en ambas partes, mismos nombres, mismos cuerpos,
-cero diferencias. La primera línea de `logica.py` lo admite: *"el mismo código de las celdas
-del cuaderno"*.
+verifiqué función por función: 58 funciones y 5 clases en ambas partes, mismos nombres, mismo
+código (63/63 nodos con árbol sintáctico idéntico), cero diferencias. La primera línea de
+`logica.py` lo admite: *"el mismo código de las celdas del cuaderno"*. Desde la poda de
+comentarios los dos textos ya no coinciden línea a línea, aunque el código siga igual.
 
 **Por qué importa.** El proyecto tiene dos públicos: el jurado lee el cuaderno, el usuario
 abre la ventana. Un arreglo en cualquiera de los dos lados deja el otro desactualizado, y no
@@ -285,8 +288,8 @@ plan; y que `app.py` la proyecte a la tabla cuando la necesite.
 
 ### M4 · Una clase que hace tres trabajos
 
-`app.py`: 696 líneas, ~34 métodos, una clase `App`. Construye widgets, mantiene estado
-(`minuto`, `corriendo`, `estudiantes`, `cerradas`), simula el movimiento y dibuja el mapa. El
+`app.py`: 696 líneas, 40 métodos en `App` más 3 funciones sueltas. Construye widgets, mantiene
+estado (`minuto`, `corriendo`, `estudiantes`, `cerradas`), simula el movimiento y dibuja el mapa. El
 reloj vive en `tic()` (línea 533) y llama a tres métodos de refresco cada 40 ms.
 
 No es un problema de estilo: es que **no se puede probar**. No hay manera de verificar
@@ -336,9 +339,11 @@ la tabla es que convierte "creo que está bien" en "sé exactamente qué estoy s
 
 ## 8. Rendimiento y complejidad
 
-**Medido:** 9 ms para el caso completo, incluyendo las 8 corridas de Clarke-Wright + 2-opt y
-las 19 ejecuciones de Dijkstra. Para 20 estudiantes, el rendimiento no es un problema y no
-hay nada que optimizar aquí.
+**Medido:** 20 ms para el caso completo (mediana de 20 corridas, 16,7–28,3 ms, Python 3.14),
+incluyendo las 8 corridas de Clarke-Wright + 2-opt y las 19 ejecuciones de Dijkstra. Los 9 ms
+que decía la versión anterior no se reproducen hoy: el algoritmo no cambió, así que la
+diferencia es de máquina y de versión. Para 20 estudiantes el rendimiento no es un problema y
+no hay nada que optimizar aquí.
 
 **Contabilidad de la complejidad**, con las definiciones del proyecto (V=36 esquinas,
 E=54 tramos, k=18 paradas):
