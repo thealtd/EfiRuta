@@ -11,6 +11,12 @@ __pycache__/
 *.bak
 _analisis/
 
+# Cachés de herramientas
+.ruff_cache/
+
+# Caja de lo que no se necesita ver (se puede borrar sin perder nada del proyecto)
+.tmp/
+
 # Sistema
 .DS_Store
 Thumbs.db
